@@ -1,0 +1,5 @@
+.vscode
+config.ini
+data/Chapters/
+fulfil_reqs.py
+data/ExtractedPostIDs.txt

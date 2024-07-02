@@ -3,7 +3,7 @@ import reddit
 
 version = 1.0
 
-print(f"You are running version {version}")
+print(f"\nYou are running version {version}")
 
 
 def GetChapters():

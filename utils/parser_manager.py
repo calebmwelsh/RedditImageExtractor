@@ -29,12 +29,12 @@ class ParserManager:
 
     def __init__(
         self,
-        current_url: str,
         reg_args=[],
         exp_args=[],
         script_exes=[],
         cpd_cmds=[],
         window_size=[1600, 2000],
+        current_url: str = None,
     ) -> None:
         # current url
         self.current_url = current_url
@@ -52,7 +52,8 @@ class ParserManager:
         # add cpd cmds
         self.add_cpd_cmds(cpd_cmds)
         # set web driver to url
-        self.set_page(self.current_url)
+        if self.current_url:
+            self.set_page(self.current_url)
         # set window size
         self.driver.set_window_size(window_size[0], window_size[1])
 

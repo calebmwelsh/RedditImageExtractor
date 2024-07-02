@@ -1,5 +1,6 @@
 .vscode
-config.ini
-data/Chapters/
+.vs
+__pycache__
+config.toml
+data/*
 fulfil_reqs.py
-data/ExtractedPostIDs.txt

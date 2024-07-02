@@ -9,10 +9,12 @@ from cbz.comic import ComicInfo
 from cbz.constants import AgeRating, Format, Manga, PageType, YesNo
 from cbz.page import PageInfo
 
-config = configparser.ConfigParser()
-config.read("config.ini")
-OUTPUTDIR = config["General"]["OutputDirectory"]
-OUTPUTSERIES = config["General"]["OutputSeries"]
+from utils import settings
+
+OUTPUT_DIRECTORY = settings.config["General"]["OutputDirectory"]
+OUTPUT_SERIES = settings.config["General"]["OutputSeries"]
+TRANSLATION_LANG = settings.config["Reddit"]["Translation"]["TranslationLang"]
+TRANSLATION_DIRECTORY = settings.config["Reddit"]["Translation"]["TranslationDirectory"]
 
 
 def download(content):
@@ -20,9 +22,9 @@ def download(content):
     print("\nDownloading reddit content...")
     # iterate through each chapter
     for chapter in content:
-        print(chapter)
+        print(f"\n   Downloading chapter {chapter}...")
         # chapter path
-        temp_img_path = OUTPUTDIR + f"/temp_{chapter}"
+        temp_img_path = OUTPUT_DIRECTORY + f"/temp_{chapter}"
         # Create the directory if it doesn't exist
         if not os.path.exists(temp_img_path):
             os.makedirs(temp_img_path)
@@ -32,13 +34,20 @@ def download(content):
             response = requests.get(content[chapter][key])
             # save img
             if response.status_code == 200:
-                with open(temp_img_path + f"/img_{idx}.png", "wb") as f:
+                with open(temp_img_path + f"/img_{'00' if len(str(idx)) >= 2 else '0'}{idx}.png", "wb") as f:
                     f.write(response.content)
 
+        # translate content
+        if TRANSLATION_LANG and TRANSLATION_DIRECTORY:
+            translate()
+
         # create cbz file
-        create_cbz(f"data/Chapters/One Piece - Chapter {chapter}.cbz", temp_img_path)
+        create_cbz(f"{OUTPUT_DIRECTORY}/{OUTPUT_SERIES} - Chapter {chapter}.cbz", temp_img_path)
         # delete temp image dirs
-        delete_temp(OUTPUTDIR)
+        delete_temp(OUTPUT_DIRECTORY)
+
+def translate():
+    pass
 
 
 def create_cbz(output_filename, image_folder):
@@ -56,7 +65,7 @@ def create_cbz(output_filename, image_folder):
     # Create a ComicInfo object with your comic's metadata
     comic = ComicInfo.from_pages(
         pages=pages,
-        title=OUTPUTSERIES,
+        title=OUTPUT_SERIES,
         series="idk",
         number="1",
         language_iso="en",

@@ -1,0 +1,16 @@
+[General]
+OutputDirectory =  { optional = false, default = "data/ColoredChapters", explanation = "Directory for final content. Default: 'data/ColoredChapters'", example = "data/ColoredChapters" } 
+OutputSeries = { optional = false, default = "One Piece", explanation = "Used when creating CBZ. Default: 'One Piece'", example = "One Piece" } 
+ExistingPostIDs = { optional = false, default = "data/ExtractedPostIDs.txt", explanation = "File location for storing identified posts. Default: 'data/ExtractedPostIDs.txt'", example = "data/ExtractedPostIDs.txt" } 
+
+
+[Reddit]
+CLIENT_ID = {  optional = false, nmin = 12, nmax = 30, explanation = "The ID of your Reddit app of SCRIPT type", example = "fFAGRNJru1FTz70BzhT3Zg", regex = "^[-a-zA-Z0-9._~+/]+=*$", input_error = "The client ID can only contain printable characters.", oob_error = "The ID should be over 12 and under 30 characters, double check your input."} 
+CLIENT_SECRET = { optional = false, nmin = 20, nmax = 40, explanation = "The Client Secret of your Reddit App.", example = "syZpWsYPKNvz6l1D7m09NV9PDACgrC", regex = "^[-a-zA-Z0-9._~+/]+=*$", input_error = "The client secret can only contain printable characters.", oob_error = "The secret should be over 20 and under 40 characters, double check your input."} 
+USER_AGENT = { optional = false, explanation = "A User Agent of your choosing.", example = "Window11:WebAppName:v0.1 by u/YourUsername"} 
+REDDITOR = { optional = false, default = "Woody1_12", explanation = "A Redditor of your choosing. Default: 'Woody1_12'", example = "Woody1_12" } 
+
+[Reddit.Translation]
+TranslationLang =  { optional = true, default = "en", explanation = "The language you would like to translate to.", example = "en", options = ['','af', 'ak', 'am', 'ar', 'as', 'ay', 'az', 'be', 'bg', 'bho', 'bm', 'bn', 'bs', 'ca', 'ceb', 'ckb', 'co', 'cs', 'cy', 'da', 'de', 'doi', 'dv', 'ee', 'el', 'en', 'en-US', 'eo', 'es', 'et', 'eu', 'fa', 'fi', 'fr', 'fy', 'ga', 'gd', 'gl', 'gn', 'gom', 'gu', 'ha', 'haw', 'hi', 'hmn', 'hr', 'ht', 'hu', 'hy', 'id', 'ig', 'ilo', 'is', 'it', 'iw', 'ja', 'jw', 'ka', 'kk', 'km', 'kn', 'ko', 'kri', 'ku', 'ky', 'la', 'lb', 'lg', 'ln', 'lo', 'lt', 'lus', 'lv', 'mai', 'mg', 'mi', 'mk', 'ml', 'mn', 'mni-Mtei', 'mr', 'ms', 'mt', 'my', 'ne', 'nl', 'no', 'nso', 'ny', 'om', 'or', 'pa', 'pl', 'ps', 'pt', 'qu', 'ro', 'ru', 'rw', 'sa', 'sd', 'si', 'sk', 'sl', 'sm', 'sn', 'so', 'sq', 'sr', 'st', 'su', 'sv', 'sw', 'ta', 'te', 'tg', 'th', 'ti', 'tk', 'tl', 'tr', 'ts', 'tt', 'ug', 'uk', 'ur', 'uz', 'vi', 'xh', 'yi', 'yo', 'zh-CN', 'zh-TW', 'zu'] }
+TranslationDirectory = { optional = true, default = "data/TranslatedB&WChapters", explanation = "Directory of B&W Manga in your selected langauage. Default: 'TranslatedB&WChapters'", example = "TranslatedB&WChapters" } 
+

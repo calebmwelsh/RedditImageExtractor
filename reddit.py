@@ -1,4 +1,3 @@
-import configparser
 import re
 import time
 
@@ -6,27 +5,28 @@ import praw
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 
-from parser_manager import ParserManager
+from utils import settings
+from utils.parser_manager import ParserManager
 
-config = configparser.ConfigParser()
-config.read("config.ini")
-EXISTINGPOSTIDSPATH = config["General"]["ExistingPostIDs"]
-CLIENT_ID = config["Reddit"]["CLIENT_ID"]
-CLIENT_SECRET = config["Reddit"]["CLIENT_SECRET"]
-USER_AGENT = config["Reddit"]["USER_AGENT"]
-REDDITOR = config["Reddit"]["REDDITOR"]
+EXISTING_POSTIDS_PATH = settings.config["General"]["ExistingPostIDs"]
+CLIENT_ID = settings.config["Reddit"]["CLIENT_ID"]
+CLIENT_SECRET = settings.config["Reddit"]["CLIENT_SECRET"]
+USER_AGENT = settings.config["Reddit"]["USER_AGENT"]
+REDDITOR = settings.config["Reddit"]["REDDITOR"]
 
 
 def getContent():
-    # prompt
-    print("\nGetting reddit content...")
-    # reddit obj and existing ids
+    global parser
+    # reddit/parser obj and existing ids
     reddit = getReddit()
-    existingPostIds = getExistingPostIds(EXISTINGPOSTIDSPATH)
+    parser = getParser()
+    existingPostIds = getExistingPostIds(EXISTING_POSTIDS_PATH)
     # posts and content containing chapter number and url to img posts
     posts = []
     content = {}
 
+    # prompt
+    print("\nGetting reddit content...")
     # get submissions
     for submission in reddit.redditor(REDDITOR).submissions.new(limit=None):
         try:
@@ -49,6 +49,10 @@ def getContent():
             # print(f'\nPost {post.id} has already been parsed continuing...')
             continue
 
+        chapter_num = re.findall(r"\d+", post.title)[0]
+        # prompt
+        print(f"\n  Getting chapter {chapter_num}...")
+
         # Extract Img URLs
         img_urls = {}
         # chapter content
@@ -65,23 +69,13 @@ def getContent():
         # reorder img ids
         content[re.findall(r"\d+", post.title)[0]] = getOrderImgids(chapter_content)
         # add id to existing
-        addExistingid(post.id)
+        # addExistingid(post.id)
 
     return dict(sorted(content.items()))
 
 
 def getOrderImgids(content):
-    # web parser object
-    reg_args = ["--disable-blink-features=AutomationControlled", "--headless"]
-    exp_args = {
-        "excludeSwitches": ["enable-automation"],
-        "useAutomationExtension": False,
-    }
-    script_exes = [
-        "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-    ]
-    cpd_cmds = {"Network.setUserAgentOverride": {"userAgent": USER_AGENT}}
-    parser = ParserManager(content["url"], reg_args, exp_args, script_exes, cpd_cmds)
+    parser.set_page(content["url"])
     # get html content
     html_content = parser.wait_for_element(
         By.CLASS_NAME, "_1apobczT0TzIKMWpza0OhL"
@@ -103,7 +97,7 @@ def getOrderImgids(content):
 
 
 def addExistingid(post_id):
-    with open(EXISTINGPOSTIDSPATH, "a") as file:
+    with open(EXISTING_POSTIDS_PATH, "a") as file:
         file.write(post_id + "\n")
 
 
@@ -111,6 +105,24 @@ def getReddit():
     return praw.Reddit(
         client_id=CLIENT_ID, client_secret=CLIENT_SECRET, user_agent=USER_AGENT
     )
+
+
+def getParser():
+    # web parser object
+    reg_args = ["--disable-blink-features=AutomationControlled", "--headless"]
+    exp_args = {
+        "excludeSwitches": ["enable-automation"],
+        "useAutomationExtension": False,
+    }
+    script_exes = [
+        "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+    ]
+    cpd_cmds = {
+        "Network.setUserAgentOverride": {
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+        }
+    }
+    return ParserManager(reg_args, exp_args, script_exes, cpd_cmds)
 
 
 def getExistingPostIds(file_path):
